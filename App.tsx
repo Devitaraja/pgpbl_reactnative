@@ -53,10 +53,10 @@ function App(): React.JSX.Element {
         <Header />
         <View style={styles.contentContainer}>
           <Section title="Nama">
-            Dhimar Fadhilansyah
+            Yellove Devitaraja
           </Section>
           <Section title="NIM">
-            22/493570/SV/20710
+            22/494832/SV/20918
           </Section>
           <Section title="Kelas">
             A

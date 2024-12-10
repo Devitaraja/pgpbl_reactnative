@@ -7,9 +7,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { WebView } from 'react-native-webview';
 import { faUserGraduate } from '@fortawesome/free-solid-svg-icons';
-import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faPen } from '@fortawesome/free-solid-svg-icons';
 import Mahasiswa from './List_data';
 import CreateData from './CreateData';
+import EditData from './EditData'
 
 function HomeScreen() {
   return (
@@ -25,10 +26,7 @@ function SettingsScreen() {
 
 function WebScreen() {
   return (
-    <WebView
-      source={{ uri: 'https://github.com/Devitaraja' }}
-      style={{ flex: 1 }} // Optional: Makes WebView take up the full screen
-    />
+    <EditData />
   );
 }
 
@@ -81,7 +79,7 @@ export default function App() {
           }}
         />
         <Tab.Screen
-          name="Github"
+          name="Edit Data"
           component={WebScreen}
           options={{
             headerStyle: {
@@ -89,7 +87,7 @@ export default function App() {
             },
             headerTintColor: '#5A5A33', // Warna teks header (kuning pastel gelap)
             tabBarIcon: ({ color }) => (
-              <FontAwesomeIcon icon={faGithub} color={color} size={20} />
+              <FontAwesomeIcon icon={faPen} color={color} size={20} />
             ),
           }}
         />

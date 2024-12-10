@@ -25,7 +25,7 @@ function SettingsScreen() {
 function WebScreen() {
   return (
     <WebView
-      source={{ uri: 'https://github.com/dhimarc' }}
+      source={{ uri: 'https://github.com/devitaraja' }}
       style={{ flex: 1 }} // Optional: Makes WebView take up the full screen
     />
   );

@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faGraduationCap, faChevronRight, faTrash } from '@fortawesome/free-solid-svg-icons'
-
+import { Button } from 'react-native'
 const Listdata = () => {
-  const jsonUrl = 'http://10.0.2.2:3000/mahasiswa2';
+  const jsonUrl = 'http://192.168.254.44:3000/mahasiswa';
   const [isLoading, setLoading] = useState(true);
   const [dataUser, setDataUser] = useState([]);
   const [refresh, setRefresh] = useState(false);
@@ -48,12 +48,23 @@ const Listdata = () => {
                 Alert.alert("Gagal", "Terjadi kesalahan saat menghapus data");
               });
           }
-          
-          
+
+
         }
       ]
     );
   };
+  // function deleteData(id) {
+  //  fetch(jsonUrl + '/' + id, {
+  //    method: 'DELETE',
+  //  })
+  //    .then((response) => response.json())
+  //    .then((json) => {
+  //      console.log(json);
+  //      alert('Data terhapus');
+  //      refreshPage();
+  //    })
+  // }
 
   return (
     <SafeAreaView>
@@ -78,8 +89,8 @@ const Listdata = () => {
                     </View>
                     <View>
                       <Text style={styles.cardtitle}>{item.first_name} {item.last_name}</Text>
-                      <Text>{item.kelas}</Text>
-                      <Text>{item.gender}</Text>
+                      <Text style={styles.cardtitle}>{item.kelas}</Text>
+                      <Text style={styles.cardtitle}>{item.gender}</Text>
                     </View>
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end' }}>
                       <TouchableOpacity onPress={() => deleteData(item.id)}>
@@ -88,6 +99,16 @@ const Listdata = () => {
                     </View>
                   </View>
                 </TouchableOpacity>
+                <View style={styles.form}>
+                  <Button title="Hapus"
+                    onPress={() => Alert.alert('Hapus data', 'Yakin akan menghapus data ini?', [
+                      { text: 'Tidak', onPress: () => console.log('button tidak') },
+                      { text: 'Ya', onPress: () => deleteData(item.id) },
+                    ])}
+                    color={'red'}
+                  />
+                </View>
+
               </View>
             )}
           />
@@ -103,7 +124,7 @@ const styles = StyleSheet.create({
   title: {
     paddingVertical: 12,
     backgroundColor: '#333',
-    color: 'white',
+    color: 'black',
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -115,6 +136,7 @@ const styles = StyleSheet.create({
   cardtitle: {
     fontSize: 14,
     fontWeight: 'bold',
+    color: 'black'
   },
   card: {
     flexDirection: 'row',
