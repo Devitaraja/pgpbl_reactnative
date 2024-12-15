@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peta Interaktif dengan Marker dan Form Input</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Popup Form Styling */
+        #form-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
+            overflow-y: auto;
+            max-height: 80%;
+        }
+
+        #form-popup h2 {
+            margin-top: 0;
+            color: #4CAF50;
+            text-align: center;
+        }
+
+        #close-button {
+            background-color: #E63946;
+        }
+
+        #close-button:hover {
+            background-color: #D62828;
+        }
+
+        /* Dim Background when Form is Open */
+        #dim-background {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Add Point Button */
+        #add-point-btn {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        #add-point-btn:hover {
+            background: #45a049;
+        }
+
+        /* Refresh Button */
+        #refresh-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        #refresh-btn:hover {
+            background: #1976D2;
+        }
+    </style>
+</head>
+
+<body>
+<div id="dim-background"></div>
+<button id="add-point-btn">Tambah Titik</button>
+<button id="refresh-btn">🔄</button>
+<div id="map"></div>
+
+<!-- Form Popup -->
+<div id="form-popup">
+    <h2>Tambah Data Mahasiswa</h2>
+    <form id="mahasiswaForm">
+        <input type="text" id="first_name" placeholder="First Name" required />
+        <input type="text" id="last_name" placeholder="Last Name" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="text" id="kelas" placeholder="Kelas" required />
+        <input type="text" id="gender" placeholder="Gender" required />
+        <input type="hidden" id="latitude" />
+        <input type="hidden" id="longitude" />
+        <button type="submit">Tambah Data</button>
+        <button type="button" id="close-button">Tutup</button>
+    </form>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    var map = L.map('map').setView([-7.774796670378405, 110.37442978811552], 13);
+
+    // Basemap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18
+    }).addTo(map);
+
+    var formPopup = document.getElementById('form-popup');
+    var dimBackground = document.getElementById('dim-background');
+    var closeButton = document.getElementById('close-button');
+    var addPointBtn = document.getElementById('add-point-btn');
+    var refreshBtn = document.getElementById('refresh-btn');
+    var mahasiswaForm = document.getElementById('mahasiswaForm');
+    var marker = null;
+
+    // Event untuk menutup form
+    closeButton.addEventListener('click', function () {
+        formPopup.style.display = 'none';
+        dimBackground.style.display = 'none';
+    });
+
+    // Event tombol tambah titik
+    addPointBtn.addEventListener('click', function () {
+        if (!marker) {
+            // Menambahkan marker yang bisa digeser
+            marker = L.marker(map.getCenter(), { draggable: true }).addTo(map);
+            marker.bindPopup('Geser marker ke lokasi yang diinginkan, lalu klik marker untuk menambahkan data.').openPopup();
+
+            // Menangani event klik pada marker untuk membuka form
+            marker.on('click', function () {
+                var latLng = marker.getLatLng();
+                document.getElementById('latitude').value = latLng.lat;
+                document.getElementById('longitude').value = latLng.lng;
+                formPopup.style.display = 'block';
+                dimBackground.style.display = 'block';
+            });
+        }
+    });
+
+    // Event submit form
+    mahasiswaForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var firstName = document.getElementById('first_name').value;
+        var lastName = document.getElementById('last_name').value;
+        var email = document.getElementById('email').value;
+        var kelas = document.getElementById('kelas').value;
+        var gender = document.getElementById('gender').value;
+        var latitude = document.getElementById('latitude').value;
+        var longitude = document.getElementById('longitude').value;
+
+        var newData = {
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            kelas: kelas,
+            gender: gender,
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude)
+        };
+
+        // Simpan data ke JSON Server
+        fetch('http://192.168.178.44:3000/mahasiswa', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Sukses:', data);
+
+                // Tambahkan marker permanen
+                L.marker([latitude, longitude]).addTo(map)
+                    .bindPopup(`
+                        <strong>${firstName} ${lastName}</strong><br>
+                        ${email}<br>${kelas}<br>${gender}
+                    `)
+                    .openPopup();
+
+                mahasiswaForm.reset();
+                formPopup.style.display = 'none';
+                dimBackground.style.display = 'none';
+                marker.remove();
+                marker = null; // Reset draggable marker
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+
+    // Ambil data mahasiswa dari JSON Server dan tampilkan di peta
+    function loadData() {
+        fetch('http://192.168.178.44:3000/mahasiswa')
+            .then(response => response.json())
+            .then(data => {
+                // Hapus marker lama
+                map.eachLayer(function (layer) {
+                    if (layer instanceof L.Marker) {
+                        layer.remove();
+                    }
+                });
+
+                // Menambahkan marker ke peta untuk setiap mahasiswa
+                data.forEach(student => {
+                    var studentMarker = L.marker([student.latitude, student.longitude]).addTo(map)
+                        .bindPopup(`
+                            <strong>${student.first_name} ${student.last_name}</strong><br>
+                            ${student.email}<br>${student.kelas}<br>${student.gender}
+                        `);
+
+                    // Menampilkan detail data mahasiswa saat marker diklik
+                    studentMarker.on('click', function () {
+                        document.getElementById('detail-first-name').textContent = student.first_name;
+                        document.getElementById('detail-last-name').textContent = student.last_name;
+                        document.getElementById('detail-email').textContent = student.email;
+                        document.getElementById('detail-kelas').textContent = student.kelas;
+                        document.getElementById('detail-gender').textContent = student.gender;
+
+                        formPopup.style.display = 'block';
+                        dimBackground.style.display = 'block';
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    // Refresh button event
+    refreshBtn.addEventListener('click', function () {
+        loadData(); // Reload data from server and refresh markers
+    });
+
+    // Load initial data
+    loadData();
+</script>
+</body>
+
+</html>
