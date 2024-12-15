@@ -51,7 +51,7 @@ Berikut adalah beberapa tangkapan layar dari aplikasi **Cari Es Teh Jumbo**:
 ![Halaman edit data](./screenshots/edit_data.jpg)
 
 ### Halaman Edit Data
-![Halaman list Data](screenshots/list_data.jpg)
+![Halaman list Data](/screenshots/list_data.jpg)
 
 
 
