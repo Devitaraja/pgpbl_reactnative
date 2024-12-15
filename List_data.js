@@ -1,11 +1,11 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faGraduationCap, faChevronRight, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { Button } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faGraduationCap, faTrash, faWhiskeyGlass } from '@fortawesome/free-solid-svg-icons';
+
 const Listdata = () => {
-  const jsonUrl = 'http://192.168.254.44:3000/mahasiswa';
+  const jsonUrl = 'http://192.168.136.44:3000/mahasiswa';
   const [isLoading, setLoading] = useState(true);
   const [dataUser, setDataUser] = useState([]);
   const [refresh, setRefresh] = useState(false);
@@ -15,11 +15,11 @@ const Listdata = () => {
   }, []);
 
   const fetchData = () => {
+    setLoading(true);
     fetch(jsonUrl)
       .then((response) => response.json())
       .then((json) => {
-        console.log(json)
-        setDataUser(json)
+        setDataUser(json);
       })
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
@@ -27,44 +27,32 @@ const Listdata = () => {
 
   const deleteData = (id) => {
     Alert.alert(
-      "Konfirmasi",
-      "Apakah Anda yakin ingin menghapus data ini?",
+      'Konfirmasi',
+      'Apakah Anda yakin ingin menghapus data ini?',
       [
         {
-          text: "Batal",
-          style: "cancel"
+          text: 'Batal',
+          style: 'cancel',
         },
         {
+          text: 'Ya',
           onPress: () => {
-            fetch(`${jsonUrl}/${id}`, { // Gunakan backtick untuk template literal
+            fetch(`${jsonUrl}/${id}`, {
               method: 'DELETE',
             })
               .then(() => {
-                Alert.alert("Berhasil", "Data berhasil dihapus");
+                Alert.alert('Berhasil', 'Data berhasil dihapus');
                 fetchData(); // Refresh data setelah menghapus
               })
               .catch((error) => {
                 console.error(error);
-                Alert.alert("Gagal", "Terjadi kesalahan saat menghapus data");
+                Alert.alert('Gagal', 'Terjadi kesalahan saat menghapus data');
               });
-          }
-
-
-        }
+          },
+        },
       ]
     );
   };
-  // function deleteData(id) {
-  //  fetch(jsonUrl + '/' + id, {
-  //    method: 'DELETE',
-  //  })
-  //    .then((response) => response.json())
-  //    .then((json) => {
-  //      console.log(json);
-  //      alert('Data terhapus');
-  //      refreshPage();
-  //    })
-  // }
 
   return (
     <SafeAreaView>
@@ -73,70 +61,53 @@ const Listdata = () => {
           <Text style={styles.cardtitle}>Loading...</Text>
         </View>
       ) : (
-        <View>
-          <FlatList
-            style={{ marginBottom: 0 }}
-            data={dataUser}
-            onRefresh={fetchData}
-            refreshing={refresh}
-            keyExtractor={({ id }) => id.toString()}
-            renderItem={({ item }) => (
-              <View>
-                <TouchableOpacity>
-                  <View style={styles.card}>
-                    <View style={styles.avatar}>
-                      <FontAwesomeIcon icon={faGraduationCap} size={50} color={item.color} />
-                    </View>
-                    <View>
-                      <Text style={styles.cardtitle}>{item.first_name} {item.last_name}</Text>
-                      <Text style={styles.cardtitle}>{item.kelas}</Text>
-                      <Text style={styles.cardtitle}>{item.gender}</Text>
-                    </View>
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end' }}>
-                      <TouchableOpacity onPress={() => deleteData(item.id)}>
-                        <FontAwesomeIcon icon={faTrash} size={20} color="red" />
-                      </TouchableOpacity>
-                    </View>
+        <FlatList
+          data={dataUser}
+          onRefresh={fetchData}
+          refreshing={refresh}
+          keyExtractor={({ id }) => id.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.cardContainer}>
+              <TouchableOpacity>
+                <View style={styles.card}>
+                  <View style={styles.avatar}>
+                    <FontAwesomeIcon icon={faWhiskeyGlass} size={25} color={item.color || 'black'} />
                   </View>
-                </TouchableOpacity>
-                <View style={styles.form}>
-                  <Button title="Hapus"
-                    onPress={() => Alert.alert('Hapus data', 'Yakin akan menghapus data ini?', [
-                      { text: 'Tidak', onPress: () => console.log('button tidak') },
-                      { text: 'Ya', onPress: () => deleteData(item.id) },
-                    ])}
-                    color={'red'}
-                  />
+                  <View >
+                    <Text style={styles.cardtitle}>{item.name}</Text>
+                    <Text style={styles.cardtitle}>{item.address}</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => deleteData(item.id)} style={styles.trashIcon}>
+                    <FontAwesomeIcon icon={faTrash} size={20} color="red" />
+                  </TouchableOpacity>
                 </View>
-
-              </View>
-            )}
-          />
-        </View>
+              </TouchableOpacity>
+            </View>
+          )}
+        />
       )}
     </SafeAreaView>
   );
-}
+};
 
-export default Listdata
+export default Listdata;
 
 const styles = StyleSheet.create({
-  title: {
-    paddingVertical: 12,
-    backgroundColor: '#333',
-    color: 'black',
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
+  cardContainer: {
+    marginVertical: 7,
+    marginHorizontal: 20,
   },
   avatar: {
     borderRadius: 100,
     width: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cardtitle: {
+    maxWidth: 200,
     fontSize: 14,
     fontWeight: 'bold',
-    color: 'black'
+    color: 'black',
   },
   card: {
     flexDirection: 'row',
@@ -144,19 +115,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: 'white',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 1,
-      height: 1,
-    },
-    shadowOpacity: 0.20,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.2,
     shadowRadius: 1.41,
     elevation: 2,
-    marginHorizontal: 20,
-    marginVertical: 7
+    alignItems: 'center',
   },
-  form: {
-    paddingHorizontal: 20,
-    paddingTop: 5,
-    paddingBottom: 20,
+  trashIcon: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
   },
 });

@@ -112,13 +112,11 @@
 
 <!-- Form Popup -->
 <div id="form-popup">
-    <h2>Tambah Data Mahasiswa</h2>
+    <h2>Tambah Data Es Teh Jumbo</h2>
     <form id="mahasiswaForm">
-        <input type="text" id="first_name" placeholder="First Name" required />
-        <input type="text" id="last_name" placeholder="Last Name" required />
-        <input type="email" id="email" placeholder="Email" required />
-        <input type="text" id="kelas" placeholder="Kelas" required />
-        <input type="text" id="gender" placeholder="Gender" required />
+        <input type="text" id="name" placeholder="Nama Kedai" required />
+        <input type="text" id="address" placeholder="Alamat" required />
+        <!-- Input tersembunyi untuk koordinat -->
         <input type="hidden" id="latitude" />
         <input type="hidden" id="longitude" />
         <button type="submit">Tambah Data</button>
@@ -172,26 +170,20 @@
     mahasiswaForm.addEventListener('submit', function (event) {
         event.preventDefault();
 
-        var firstName = document.getElementById('first_name').value;
-        var lastName = document.getElementById('last_name').value;
-        var email = document.getElementById('email').value;
-        var kelas = document.getElementById('kelas').value;
-        var gender = document.getElementById('gender').value;
+        var name = document.getElementById('name').value;
+        var address = document.getElementById('address').value;
         var latitude = document.getElementById('latitude').value;
         var longitude = document.getElementById('longitude').value;
 
         var newData = {
-            first_name: firstName,
-            last_name: lastName,
-            email: email,
-            kelas: kelas,
-            gender: gender,
+            name: name,
+            address: address,
             latitude: parseFloat(latitude),
             longitude: parseFloat(longitude)
         };
 
         // Simpan data ke JSON Server
-        fetch('http://192.168.178.44:3000/mahasiswa', {
+        fetch('http://192.168.136.44:3000/mahasiswa', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -205,8 +197,8 @@
                 // Tambahkan marker permanen
                 L.marker([latitude, longitude]).addTo(map)
                     .bindPopup(`
-                        <strong>${firstName} ${lastName}</strong><br>
-                        ${email}<br>${kelas}<br>${gender}
+                        <strong>${name}</strong><br>
+                        ${address}
                     `)
                     .openPopup();
 
@@ -223,7 +215,7 @@
 
     // Ambil data mahasiswa dari JSON Server dan tampilkan di peta
     function loadData() {
-        fetch('http://192.168.178.44:3000/mahasiswa')
+        fetch('http://192.168.136.44:3000/mahasiswa')
             .then(response => response.json())
             .then(data => {
                 // Hapus marker lama
@@ -235,19 +227,24 @@
 
                 // Menambahkan marker ke peta untuk setiap mahasiswa
                 data.forEach(student => {
-                    var studentMarker = L.marker([student.latitude, student.longitude]).addTo(map)
+                    // console.log('lat:', student.latitude)
+                    // alert(student.Latitude)
+                    var studentMarker = L.marker([student.Latitude, student.Longitude]).addTo(map)
                         .bindPopup(`
-                            <strong>${student.first_name} ${student.last_name}</strong><br>
-                            ${student.email}<br>${student.kelas}<br>${student.gender}
+                            Kedai: <strong>${student.name} </strong>
+                            <br/>
+                            Alamat: ${student.address}
+                            <br>
+                           
                         `);
 
                     // Menampilkan detail data mahasiswa saat marker diklik
                     studentMarker.on('click', function () {
-                        document.getElementById('detail-first-name').textContent = student.first_name;
-                        document.getElementById('detail-last-name').textContent = student.last_name;
-                        document.getElementById('detail-email').textContent = student.email;
-                        document.getElementById('detail-kelas').textContent = student.kelas;
-                        document.getElementById('detail-gender').textContent = student.gender;
+                        document.getElementById('detail-first-name').textContent = student.name;
+                        document.getElementById('detail-last-name').textContent = student.address;
+                        // document.getElementById('detail-email').textContent = student.email;
+                        // document.getElementById('detail-kelas').textContent = student.kelas;
+                        // document.getElementById('detail-gender').textContent = student.gender;
 
                         formPopup.style.display = 'block';
                         dimBackground.style.display = 'block';
