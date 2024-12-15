@@ -1,6 +1,6 @@
 Berikut adalah deskripsi produk yang telah disesuaikan untuk aplikasi **Cari Es Teh Jumbo!**:  
 
-```markdown
+
 # Nama Produk: Cari Es Teh Jumbo!
 
 ## Deskripsi Produk
@@ -51,8 +51,5 @@ Berikut adalah beberapa tangkapan layar dari aplikasi **Cari Es Teh Jumbo**:
 ![Halaman edit data](./screenshots/edit_data.jpg)
 
 ### Halaman Edit Data
-![Halaman list Data](/screenshots/list_data.jpg)
-
-
-
+![Halaman list Data](screenshots/list_data.jpg)
 
