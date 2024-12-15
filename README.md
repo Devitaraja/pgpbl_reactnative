@@ -1,4 +1,4 @@
-Berikut adalah deskripsi produk yang telah disesuaikan untuk aplikasi **Cari Es Teh Jumbo!**:  
+ 
 
 
 # Nama Produk: Cari Es Teh Jumbo!
